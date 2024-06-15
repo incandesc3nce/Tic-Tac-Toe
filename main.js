@@ -171,13 +171,9 @@ const GameHandler = (function() {
         }
     }
 
-    const playRound = (x, y) => {
-        console.log(`${activePlayer.getName()}'s turn.`, '');
-        
+    const playRound = (x, y) => {     
         GameBoard.placeMark(activePlayer, x, y);
         totalRounds++;
-
-        GameBoard.logBoard();
 
         if (totalRounds >= 5) {
             checkGameState(x, y);
@@ -193,7 +189,7 @@ const GameHandler = (function() {
     const reset = () => {
         GameBoard.reset();
         gameIsFinished = false;
-        activePlayer = player2;
+        activePlayer = getActivePlayer() === player1 ? player2 : player1;
         totalRounds = 0;
     };
 
@@ -268,6 +264,8 @@ const ScreenController = (function() {
         GameHandler.switchMarks();
         document.querySelector('#player1-mark').textContent = GameHandler.getPlayer1().getMark().toUpperCase();
         document.querySelector('#player2-mark').textContent = GameHandler.getPlayer2().getMark().toUpperCase();
+
+        document.querySelector('.draws .message').textContent = '';
 
         GameHandler.reset();
         updateScreen();
