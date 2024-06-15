@@ -67,6 +67,10 @@ const GameHandler = (function() {
     let draws = 0;
     let activePlayer = player1;
     let totalRounds = 0;
+
+    const getActivePlayer = () => activePlayer;
+    const getPlayer1 = () => player1;
+    const getPlayer2 = () => player2;
     
     const switchMarks = () => {
         const player1Mark = player1.getMark;
@@ -137,7 +141,7 @@ const GameHandler = (function() {
         }
 
         if (finished) {
-            //update DOM
+            ScreenController.disableButtons();
         }
     }
 
@@ -157,25 +161,53 @@ const GameHandler = (function() {
         switchTurn();
     };
 
-    return {playRound};
+    return {playRound, getActivePlayer, switchMarks, getPlayer1, getPlayer2};
 })();
 
 
 const ScreenController = (function() {
-    const updateScreen = () => {
-        const board = document.querySelector('.board');
+    const board = document.querySelector('.board');
+    const buttons = document.querySelectorAll('.board .cell button');
 
+    const updateScreen = () => {
         for (let x = 0; x < 3; x++) {
             for (let y = 0; y < 3; y++) {
-                const cellMark = GameBoard.getCellByCoords(x, y).getValue();
-                const buttons = document.querySelectorAll('.board .cell button');
-                
-                buttons[x + y * 3].innerText = cellMark;
+                const cellMark = GameBoard.getCellByCoords(y, x).getValue();
+                buttons[x + y * 3].textContent = cellMark;
             }    
         }
     };
 
-    return {updateScreen};
+    const setActivePlayer = () => {
+        const player = GameHandler.getActivePlayer();
+        const text = 'your turn';
+        const activePlayer = player === GameHandler.getPlayer1() ? 'player1' : 'player2';
+        const notActivePlayer = player === GameHandler.getPlayer1() ? 'player2' : 'player1';
+
+        document.querySelector(`.${notActivePlayer} .message`).textContent = '';
+        document.querySelector(`.${activePlayer} .message`).textContent = text;
+    };
+
+    const boardClickHandler = (event) => {
+        const cell = event.target;
+        cell.disabled = true;
+        const x = parseInt(cell.getAttribute('x'));
+        const y = parseInt(cell.getAttribute('y'));
+        GameHandler.playRound(x, y);
+
+        setActivePlayer();
+        updateScreen();
+    };
+
+    const disableButtons = () => {
+        buttons.forEach(button => button.disabled = true);
+    };
+
+    buttons.forEach(button => button.addEventListener('click', boardClickHandler));
+
+
+
+    return {disableButtons, setActivePlayer};
 })();
 
-ScreenController.updateScreen();
+ScreenController.setActivePlayer();
