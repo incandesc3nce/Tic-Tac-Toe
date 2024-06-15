@@ -68,7 +68,7 @@ function Player(name) {
 }
 
 const GameHandler = (function() {
-    const player1 = Player('Player 1');
+    const player1 = Player('incandesc3nce');
     player1.setMark('x');
     const player2 = Player('Player 2');
     player2.setMark('o');
@@ -161,7 +161,7 @@ const GameHandler = (function() {
             gameIsFinished = true;
 
             if (message === '') {
-                message = "it's a tie!";
+                message = "it's a draw!";
             } else {
                 message = `${activePlayer.getName()} wins!`;
             }
@@ -215,7 +215,7 @@ const ScreenController = (function() {
     };
 
     const setMessage = (message) => {
-        if (message === "it's a tie!") {
+        if (message === "it's a draw!" || message.includes('wins!')) {
             document.querySelector('.player1 .message').textContent = '';
             document.querySelector('.player2 .message').textContent = '';
             document.querySelector('.draws .message').textContent = message;
@@ -266,12 +266,24 @@ const ScreenController = (function() {
 
     const restart = () => {
         GameHandler.switchMarks();
+        document.querySelector('#player1-mark').textContent = GameHandler.getPlayer1().getMark().toUpperCase();
+        document.querySelector('#player2-mark').textContent = GameHandler.getPlayer2().getMark().toUpperCase();
+
         GameHandler.reset();
         updateScreen();
         ScreenController.setMessage('your turn');
         enableButtons();
         hideRestartButton();
     };
+
+    const inputNameHandler = (event) => {
+        const playerName = event.target.value;
+        const player = event.target.id === 'player1-name' ? GameHandler.getPlayer1() : GameHandler.getPlayer2();
+        player.setName(playerName);
+    };
+
+    document.querySelector('#player1-name').addEventListener('keyup', inputNameHandler);
+    document.querySelector('#player2-name').addEventListener('keyup', inputNameHandler);
 
     document.querySelector('.restart').addEventListener('click', restart);
 
