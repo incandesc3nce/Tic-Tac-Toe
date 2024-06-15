@@ -148,7 +148,7 @@ const GameHandler = (function() {
         }
         let message;
         //check for tie
-        if (totalRounds === 9) {
+        if (totalRounds === 9 && !finished) {
             console.log('It\'s a tie!', '');
             finished = true;
             draws += 1;
