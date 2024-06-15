@@ -40,7 +40,15 @@ const GameBoard = (function() {
         getCellByCoords(row, column).setValue(player.getMark());
     };
 
-    return {getBoard, logBoard, placeMark, getCellByCoords};
+    const reset = () => {
+        for (let x = 0; x < rows; x++) {
+            for (let y = 0; y < columns; y++) {
+                board[x][y].setValue('');
+            }
+        }
+    }
+
+    return {getBoard, logBoard, placeMark, getCellByCoords, reset};
 })();
 
 function Player(name) {
@@ -78,8 +86,8 @@ const GameHandler = (function() {
     const getPlayer2 = () => player2;
     
     const switchMarks = () => {
-        const player1Mark = player1.getMark;
-        player1.setMark(player2.getMark);
+        const player1Mark = player1.getMark();
+        player1.setMark(player2.getMark());
         player2.setMark(player1Mark);
     };
     const switchTurn = () => {
@@ -158,6 +166,8 @@ const GameHandler = (function() {
                 message = `${activePlayer.getName()} wins!`;
             }
             ScreenController.setMessage(message);
+
+            ScreenController.showRestartButton();
         }
     }
 
@@ -180,7 +190,14 @@ const GameHandler = (function() {
         ScreenController.setMessage('your turn');
     };
 
-    return {playRound, getActivePlayer, getDraws, switchMarks, getPlayer1, getPlayer2};
+    const reset = () => {
+        GameBoard.reset();
+        gameIsFinished = false;
+        activePlayer = player2;
+        totalRounds = 0;
+    };
+
+    return {playRound, getActivePlayer, getDraws, switchMarks, getPlayer1, getPlayer2, reset};
 })();
 
 
@@ -226,16 +243,39 @@ const ScreenController = (function() {
     const disableButtons = () => {
         buttons.forEach(button => button.disabled = true);
     };
+    const enableButtons = () => {
+        buttons.forEach(button => button.disabled = false);
+    };
 
     buttons.forEach(button => button.addEventListener('click', boardClickHandler));
 
     const updateScores = () => {
         document.querySelector('#player1-score').textContent = GameHandler.getPlayer1().getScore();
         document.querySelector('#player2-score').textContent = GameHandler.getPlayer2().getScore();
+        document.querySelector('#draws').textContent = GameHandler.getDraws();
     };
 
+    const showRestartButton = () => {
+        document.querySelector('.restart').removeAttribute('disabled');
+        document.querySelector('.restart').removeAttribute('hidden');
+    };
+    const hideRestartButton = () => {
+        document.querySelector('.restart').setAttribute('disabled', true);
+        document.querySelector('.restart').setAttribute('hidden', true);
+    };
 
-    return {disableButtons, setMessage, updateScores};
+    const restart = () => {
+        GameHandler.switchMarks();
+        GameHandler.reset();
+        updateScreen();
+        ScreenController.setMessage('your turn');
+        enableButtons();
+        hideRestartButton();
+    };
+
+    document.querySelector('.restart').addEventListener('click', restart);
+
+    return {disableButtons, setMessage, updateScores, showRestartButton};
 })();
 
 ScreenController.setMessage('your turn');
