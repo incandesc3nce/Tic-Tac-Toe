@@ -55,7 +55,7 @@ body {
     height: 100vh;
 
     display: grid;
-    grid-template-rows: 1fr 4fr 1fr;
+    grid-template-rows: 1fr 4fr 1fr 0.2fr;
     grid-template-columns: 1fr 2fr 1fr;
 }
 
@@ -76,13 +76,45 @@ header h1 {
     text-shadow: var(--text-shadow) 0 5px 5px;
     font-size: min(5rem, 8vw);
 }
+aside:nth-child(1) {
+    grid-column: 1/2;
+    grid-row: 2/3;
+}
+aside {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+aside h2 {
+    font-size: min(3rem, 5vw);
+}
+aside:nth-child(2) h2 {
+    text-shadow: #d32626 0 5px 5px;
+}
+aside:nth-child(4) h2 {
+    text-shadow: #2718ff 0 5px 5px;
+}
+
+section.player {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+}
+
+aside p {
+    font-size: min(1.5rem, 3vw);
+}
 
 main {
     grid-column: 2/3;
     grid-row: 2/3;
 
     display: flex;
-    justify-content: center;
+    justify-content: space-evenly;
     align-items: center;
 }
 
@@ -101,7 +133,7 @@ main {
     font-size: 10vw;
 }
 .cell button {
-    height: 50%;
+    height: 100%;
     width: 100%;
 
     background-color: #ffffff00;
@@ -112,6 +144,8 @@ main {
     display: flex;
     justify-content: center;
     align-items: center;
+
+    overflow: hidden;
 }
 
 .top {
@@ -127,8 +161,18 @@ main {
     border-bottom: 0;
 }
 
+.draws {
+    grid-column: 2/3;
+    grid-row: 3/4;
+    display: flex;
+    justify-content: center;
+
+    font-size: min(1.5rem, 3vw);;
+}
 
 footer {
+    grid-column: 1/4;
+    grid-row: 4/5;
     justify-content: flex-end;
     padding-bottom: 1.5vh;
 }
