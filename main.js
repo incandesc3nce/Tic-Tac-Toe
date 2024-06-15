@@ -138,18 +138,26 @@ const GameHandler = (function() {
                 }
             }
         }
+        let message;
         //check for tie
         if (totalRounds === 9) {
             console.log('It\'s a tie!', '');
             finished = true;
             draws += 1;
+            message = '';
         }
 
         if (finished) {
             ScreenController.disableButtons();
             ScreenController.updateScores();
             gameIsFinished = true;
-            ScreenController.setMessage('winner!');
+
+            if (message === '') {
+                message = "it's a tie!";
+            } else {
+                message = `${activePlayer.getName()} wins!`;
+            }
+            ScreenController.setMessage(message);
         }
     }
 
@@ -190,6 +198,13 @@ const ScreenController = (function() {
     };
 
     const setMessage = (message) => {
+        if (message === "it's a tie!") {
+            document.querySelector('.player1 .message').textContent = '';
+            document.querySelector('.player2 .message').textContent = '';
+            document.querySelector('.draws .message').textContent = message;
+            return;
+        }
+
         const player = GameHandler.getActivePlayer();
         
         const activePlayer = player === GameHandler.getPlayer1() ? 'player1' : 'player2';
