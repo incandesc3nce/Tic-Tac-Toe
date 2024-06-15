@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Playwrite+IS:wght@100..400&display=swap'); /* Playwrite IS*/
+@import url('https://fonts.googleapis.com/css2?family=Playwrite+IS:wght@100..400&display=swap'); /* Playwrite IS - for UI*/
+@import url('https://fonts.googleapis.com/css2?family=Playwrite+FR+Moderne:wght@100..400&display=swap'); /* Playwrite FR Moderne - x and o */
 
 /* reset */
 * {
