@@ -31,7 +31,7 @@ const GameBoard = (function() {
         }
         console.log(outputBoard);
     };
-    //TODO: refactor for html
+    
     const getCellByCoords = (row, column) => {
         return board[row][column];
     };
@@ -54,8 +54,9 @@ function Player(name) {
     const getName = () => playerName;
 
     const increaseScore = () => {score++};
+    const getScore = () => score;
 
-    return {setMark, getMark, setName, getName, increaseScore};
+    return {setMark, getMark, setName, getName, increaseScore, getScore};
 }
 
 const GameHandler = (function() {
@@ -64,9 +65,13 @@ const GameHandler = (function() {
     const player2 = Player('Player 2');
     player2.setMark('o');
 
+    let gameIsFinished = false;
+
     let draws = 0;
     let activePlayer = player1;
     let totalRounds = 0;
+
+    const getDraws = () => draws;
 
     const getActivePlayer = () => activePlayer;
     const getPlayer1 = () => player1;
@@ -142,10 +147,12 @@ const GameHandler = (function() {
 
         if (finished) {
             ScreenController.disableButtons();
+            ScreenController.updateScores();
+            gameIsFinished = true;
+            ScreenController.setMessage('winner!');
         }
     }
 
-    //TODO: refactor for html
     const playRound = (x, y) => {
         console.log(`${activePlayer.getName()}'s turn.`, '');
         
@@ -157,11 +164,15 @@ const GameHandler = (function() {
         if (totalRounds >= 5) {
             checkGameState(x, y);
         }
+        if (gameIsFinished) {
+            return;
+        }
         
         switchTurn();
+        ScreenController.setMessage('your turn');
     };
 
-    return {playRound, getActivePlayer, switchMarks, getPlayer1, getPlayer2};
+    return {playRound, getActivePlayer, getDraws, switchMarks, getPlayer1, getPlayer2};
 })();
 
 
@@ -178,14 +189,14 @@ const ScreenController = (function() {
         }
     };
 
-    const setActivePlayer = () => {
+    const setMessage = (message) => {
         const player = GameHandler.getActivePlayer();
-        const text = 'your turn';
+        
         const activePlayer = player === GameHandler.getPlayer1() ? 'player1' : 'player2';
         const notActivePlayer = player === GameHandler.getPlayer1() ? 'player2' : 'player1';
 
         document.querySelector(`.${notActivePlayer} .message`).textContent = '';
-        document.querySelector(`.${activePlayer} .message`).textContent = text;
+        document.querySelector(`.${activePlayer} .message`).textContent = message;
     };
 
     const boardClickHandler = (event) => {
@@ -194,8 +205,6 @@ const ScreenController = (function() {
         const x = parseInt(cell.getAttribute('x'));
         const y = parseInt(cell.getAttribute('y'));
         GameHandler.playRound(x, y);
-
-        setActivePlayer();
         updateScreen();
     };
 
@@ -205,9 +214,13 @@ const ScreenController = (function() {
 
     buttons.forEach(button => button.addEventListener('click', boardClickHandler));
 
+    const updateScores = () => {
+        document.querySelector('#player1-score').textContent = GameHandler.getPlayer1().getScore();
+        document.querySelector('#player2-score').textContent = GameHandler.getPlayer2().getScore();
+    };
 
 
-    return {disableButtons, setActivePlayer};
+    return {disableButtons, setMessage, updateScores};
 })();
 
-ScreenController.setActivePlayer();
+ScreenController.setMessage('your turn');
