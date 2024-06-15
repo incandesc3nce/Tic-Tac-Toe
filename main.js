@@ -68,7 +68,7 @@ const GameHandler = (function() {
     player2.setMark('o');
 
     let activePlayer = player1;
-    let moves = 0;
+    let totalRounds = 0;
     
     const switchMarks = () => {
         const player1Mark = player1.getMark;
@@ -82,13 +82,14 @@ const GameHandler = (function() {
     const playRound = () => {
         GameBoard.logBoard();
         console.log(`${activePlayer.getName()}'s turn.`, '');
+        
         let chosenCell = prompt('Choose a cell (1-9): ');
         chosenCell = parseInt(chosenCell);
-        
         GameBoard.placeMark(activePlayer, chosenCell);
-        switchTurn();
+        totalRounds++;
 
         GameBoard.logBoard();
+        switchTurn();
     };
 
     return {playRound};
