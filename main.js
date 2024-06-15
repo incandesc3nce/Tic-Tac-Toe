@@ -3,7 +3,7 @@ function Cell(number) {
     let value = '';
 
     const getValue = () => value;
-    const setValue = (player) => {value = player};
+    const setValue = (mark) => {value = mark};
     const getPlacement = () => placement;
 
     return {getValue, setValue, getPlacement};
@@ -25,13 +25,27 @@ const GameBoard = (function() {
 
     const getBoard = () => board;
     const logBoard = () => {
-        board.map((row) => {
-            const rowValues = row.map((cell) => cell.getValue());
-            console.log(rowValues);
+        let outputBoard = [];
+        board.forEach(row => {
+            outputBoard.push(row.map(cell => cell.getValue()));
         });
+        console.log(outputBoard);
     };
 
-    return {getBoard, logBoard}
+    const placeMark = (player, cellNumber) => {
+        for (let i = 0; i < rows; i++) {
+            for (let k = 0; k < columns; k++) {
+                if (board[i][k].getValue() !== '') {
+                    continue;
+                }
+                if (board[i][k].getPlacement() === cellNumber) {
+                    board[i][k].setValue(player.getMark());
+                }
+            }
+        }
+    };
+
+    return {getBoard, logBoard, placeMark};
 })();
 
 function Player(name) {
@@ -40,9 +54,42 @@ function Player(name) {
     let mark = '';
 
     const setMark = (value) => {mark = value};
-    const getMark = () => mark;  
+    const getMark = () => mark;
+    const setName = (newName) => {playerName = newName};
+    const getName = () => playerName;
 
-    return {playerName, score, setMark, getMark};
+    return {playerName, score, setMark, getMark, setName, getName};
 }
 
-GameBoard.logBoard();
+const GameHandler = (function() {
+    const player1 = Player('Player 1');
+    player1.setMark('x');
+    const player2 = Player('Player 2');
+    player2.setMark('o');
+
+    let activePlayer = player1;
+    let moves = 0;
+    
+    const switchMarks = () => {
+        const player1Mark = player1.getMark;
+        player1.setMark(player2.getMark);
+        player2.setMark(player1Mark);
+    };
+    const switchTurn = () => {
+        activePlayer = activePlayer === player1 ? player2 : player1;
+    };
+
+    const playRound = () => {
+        GameBoard.logBoard();
+        console.log(`${activePlayer.getName()}'s turn.`, '');
+        let chosenCell = prompt('Choose a cell (1-9): ');
+        chosenCell = parseInt(chosenCell);
+        
+        GameBoard.placeMark(activePlayer, chosenCell);
+        switchTurn();
+
+        GameBoard.logBoard();
+    };
+
+    return {playRound};
+})();
