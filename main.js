@@ -1,12 +1,12 @@
-function Cell(number) {
-    const placement = number;
+function Cell(x, y) {
+    const column = x;
+    const row = y;
     let value = '';
 
     const getValue = () => value;
     const setValue = (mark) => {value = mark};
-    const getPlacement = () => placement;
 
-    return {getValue, setValue, getPlacement};
+    return {getValue, setValue};
 }
 
 const GameBoard = (function() {
@@ -15,10 +15,10 @@ const GameBoard = (function() {
 
     const board = [];
 
-    for (let i = 0; i < rows; i++) {
+    for (let x = 0; x < rows; x++) {
         let row = [];
-        for (let k = 0; k < columns; k++) {
-            row.push(Cell(1 + (i*3) + k));
+        for (let y = 0; y < columns; y++) {
+            row.push(Cell(x, y));
         }
         board.push(row);
     }
@@ -26,26 +26,21 @@ const GameBoard = (function() {
     const getBoard = () => board;
     const logBoard = () => {
         let outputBoard = [];
-        board.forEach(row => {
-            outputBoard.push(row.map(cell => cell.getValue()));
-        });
+        for (let row = 0; row < rows; row++) {
+            outputBoard.push(board[row].map(cell => cell.getValue()));
+        }
         console.log(outputBoard);
     };
-
-    const placeMark = (player, cellNumber) => {
-        for (let i = 0; i < rows; i++) {
-            for (let k = 0; k < columns; k++) {
-                if (board[i][k].getValue() !== '') {
-                    continue;
-                }
-                if (board[i][k].getPlacement() === cellNumber) {
-                    board[i][k].setValue(player.getMark());
-                }
-            }
-        }
+    //TODO: refactor for html
+    const getCellByCoords = (row, column) => {
+        return board[row][column];
     };
 
-    return {getBoard, logBoard, placeMark};
+    const placeMark = (player, row, column) => {
+        getCellByCoords(row, column).setValue(player.getMark());
+    };
+
+    return {getBoard, logBoard, placeMark, getCellByCoords};
 })();
 
 function Player(name) {
@@ -58,7 +53,9 @@ function Player(name) {
     const setName = (newName) => {playerName = newName};
     const getName = () => playerName;
 
-    return {playerName, score, setMark, getMark, setName, getName};
+    const increaseScore = () => {score++};
+
+    return {setMark, getMark, setName, getName, increaseScore};
 }
 
 const GameHandler = (function() {
@@ -67,6 +64,7 @@ const GameHandler = (function() {
     const player2 = Player('Player 2');
     player2.setMark('o');
 
+    let draws = 0;
     let activePlayer = player1;
     let totalRounds = 0;
     
@@ -79,16 +77,84 @@ const GameHandler = (function() {
         activePlayer = activePlayer === player1 ? player2 : player1;
     };
 
-    const playRound = () => {
-        GameBoard.logBoard();
+    const checkGameState = (cell_x, cell_y) => {
+        const cellMark = GameBoard.getCellByCoords(cell_x, cell_y).getValue();
+        let finished = false;
+
+        //check column 
+        for (let i = 0; i < 3; i++) {
+            if (GameBoard.getCellByCoords(cell_x, i).getValue() !== cellMark) { 
+                break;
+            }
+            if (i === 2) {
+                console.log(`${activePlayer.getName()} wins!`, '');
+                activePlayer.increaseScore();
+                finished = true;
+            }
+        }
+        //check row
+        for (let i = 0; i < 3; i++) {
+            if(GameBoard.getCellByCoords(i, cell_y).getValue() !== cellMark) {
+                break;
+            }
+            if (i === 2) {
+                console.log(`${activePlayer.getName()} wins!`, '');
+                activePlayer.increaseScore();
+                finished = true;
+            }
+        }
+        //check diagonal
+        if (cell_x === cell_y) {
+            for (let i = 0; i < 3; i++) {
+                if (GameBoard.getCellByCoords(i, i).getValue() !== cellMark) {
+                    break;
+                }
+                if (i === 2) {
+                    console.log(`${activePlayer.getName()} wins!`, '');
+                    activePlayer.increaseScore();
+                    finished = true;
+                }
+            }
+        }
+        //check anti-diagonal
+        if (cell_x + cell_y === 2) {
+            for (let i = 0; i < 3; i++) {
+                if(GameBoard.getCellByCoords(i, 2 - i).getValue() !== cellMark) {
+                    break;
+                }
+                if (i === 2) {
+                    console.log(`${activePlayer.getName()} wins!`, '');
+                    activePlayer.increaseScore();
+                    finished = true;
+                }
+            }
+        }
+        //check for tie
+        if (totalRounds === 9) {
+            console.log('It\'s a tie!', '');
+            finished = true;
+            draws += 1;
+        }
+
+        if (finished) {
+            //update DOM
+        }
+    }
+
+    //TODO: refactor for html
+    const playRound = (x, y) => {
         console.log(`${activePlayer.getName()}'s turn.`, '');
         
-        let chosenCell = prompt('Choose a cell (1-9): ');
-        chosenCell = parseInt(chosenCell);
-        GameBoard.placeMark(activePlayer, chosenCell);
+        GameBoard.placeMark(activePlayer, x, y);
         totalRounds++;
 
         GameBoard.logBoard();
+
+        if (totalRounds >= 5) {
+            checkGameState(x, y);
+        }
+
+        
         switchTurn();
     };
 
