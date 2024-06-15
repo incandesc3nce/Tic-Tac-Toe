@@ -153,10 +153,29 @@ const GameHandler = (function() {
         if (totalRounds >= 5) {
             checkGameState(x, y);
         }
-
         
         switchTurn();
     };
 
     return {playRound};
 })();
+
+
+const ScreenController = (function() {
+    const updateScreen = () => {
+        const board = document.querySelector('.board');
+
+        for (let x = 0; x < 3; x++) {
+            for (let y = 0; y < 3; y++) {
+                const cellMark = GameBoard.getCellByCoords(x, y).getValue();
+                const buttons = document.querySelectorAll('.board .cell button');
+                
+                buttons[x + y * 3].innerText = cellMark;
+            }    
+        }
+    };
+
+    return {updateScreen};
+})();
+
+ScreenController.updateScreen();
