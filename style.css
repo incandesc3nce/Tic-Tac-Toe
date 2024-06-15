@@ -143,9 +143,11 @@ main {
     line-height: normal;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-end;
 
     overflow: hidden;
+
+    line-height: 1.4;
 }
 
 .top {
