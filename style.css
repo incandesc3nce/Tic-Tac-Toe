@@ -39,3 +39,101 @@ h6 {
   isolation: isolate;
 }
 /* reset end */
+
+
+:root {
+    --text-shadow: #c026d3;
+    --footer-color: #db2777;
+}
+
+
+body {
+    background-color: #020617;
+    color: #fff;
+    font-family: 'Playwrite IS', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+
+    height: 100vh;
+
+    display: grid;
+    grid-template-rows: 1fr 4fr 1fr;
+    grid-template-columns: 1fr 2fr 1fr;
+}
+
+button:hover {
+    cursor: pointer;
+}
+
+header, footer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    grid-column: 1/4;
+}
+
+header h1 {
+    text-shadow: var(--text-shadow) 0 5px 5px;
+    font-size: min(5rem, 8vw);
+}
+
+main {
+    grid-column: 2/3;
+    grid-row: 2/3;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.board {
+    font-family: 'Playwrite FR Moderne', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+}
+.cell {
+    border: 3px solid #fff;
+
+    width: 10vw;
+    height: 10vw;
+    font-size: 10vw;
+}
+.cell button {
+    height: 50%;
+    width: 100%;
+
+    background-color: #ffffff00;
+    color: #fff;
+    border: 0;
+
+    line-height: normal;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.top {
+    border-top: 0;
+}
+.left {
+    border-left: 0;
+}
+.right {
+    border-right: 0;
+}
+.bottom {
+    border-bottom: 0;
+}
+
+
+footer {
+    justify-content: flex-end;
+    padding-bottom: 1.5vh;
+}
+
+footer a {
+    color: var(--footer-color);
+    text-shadow: var(--footer-color) 0 5px 5px;
+}
